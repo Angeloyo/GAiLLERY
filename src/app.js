@@ -1,5 +1,4 @@
-AWS.config.region = 'eu-west-3'; // Region
-
+AWS.config.region = 'eu-west-3';
 
 AWS.config.credentials = new AWS.CognitoIdentityCredentials({
     IdentityPoolId: 'eu-west-3:0f35e230-b769-43ed-bc1a-58e403f58c4d'
@@ -17,10 +16,18 @@ document.getElementById('uploadBtn').addEventListener('click', function() {
 
 document.getElementById('dropzoneOverlay').addEventListener('click', function(event) {
     if (event.target.id === 'dropzoneOverlay') {
-        document.getElementById('dropzoneOverlay').style.display = 'none';
-        if (dz){
+        // document.getElementById('dropzoneOverlay').style.display = 'none';
+        location.reload();
+        if (dz) {
             dz.removeAllFiles(true);
         }
+    }
+});
+
+document.getElementById('closeDropzone').addEventListener('click', function() {
+    location.reload();
+    if (dz) {
+        dz.removeAllFiles(true);
     }
 });
 
@@ -52,7 +59,7 @@ dz = new Dropzone("#uploadForm", {
                             console.log('Successfully uploaded file.', data);
                             dzInstance.emit("success", file, data);
                             dzInstance.emit("complete", file);
-                            loadGallery();
+                            // loadGallery();
                         }
                     });
                 }
@@ -103,7 +110,7 @@ function loadGallery(showLoader = true) {
 
             const deleteIcon = document.createElement('div');
             deleteIcon.className = 'delete-icon absolute top-2 right-2 w-6 h-6 bg-red-600 text-white text-center rounded-full cursor-pointer flex items-center justify-center';
-            deleteIcon.innerHTML = '×';
+            deleteIcon.innerHTML = 'X';
             deleteIcon.onclick = function() {
                 deleteImage(item.Key);
             };
@@ -129,7 +136,6 @@ function loadGallery(showLoader = true) {
                 mobileSettings: {
                     controls: true,
                     showCloseIcon: true,
-                    // download: false,
                     rotate: false
                 }
             });

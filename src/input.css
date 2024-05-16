@@ -87,3 +87,20 @@ body {
 .gallery-item-container:hover .delete-icon {
     display: block;
 }
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #fff;
+    color: #000;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
