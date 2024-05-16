@@ -125,7 +125,13 @@ function loadGallery(showLoader = true) {
                 galleryId: "nature",
                 licenseKey: '765AA57B-7AC54794-8B6C4E56-50182807',
                 speed: 500,
-                download: false
+                download: false,
+                mobileSettings: {
+                    controls: true,
+                    showCloseIcon: true,
+                    // download: false,
+                    rotate: false
+                }
             });
         });
     });
