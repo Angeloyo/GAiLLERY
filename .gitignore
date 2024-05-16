@@ -1,2 +1,4 @@
 node_modules/
 archived/
+.DS_Store
+.env
