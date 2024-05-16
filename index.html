@@ -9,7 +9,7 @@
     <link href="src/output.css" rel="stylesheet">
     <!-- <link href="./src/output.min.css" rel="stylesheet"> -->
 
-    <!--  jQuery -->
+    <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     
     <!-- Justified Gallery -->
@@ -28,80 +28,58 @@
 
     <!-- aws sdk -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.813.0.min.js"></script>
+    
+    <!-- dropzone js -->
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
 
-    <!-- custom js -->
-    <script src="src/app.js"></script>
+    <style>
+        .dropzone-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .dropzone {
+            width: 80%;
+            height: 80%;
+            border: 2px dashed #ccc;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+    </style>
 </head> 
 <body>
 
-    <header>
-        <a href="#">
-            <h1 class="text-4xl m-7 font-custom font-bold">
+    <header class="flex flex-ro items-center mt-7 mb-12">
+        <a href="/">
+            <h1 class="text-4xl mr-7 font-custom font-bold">
                 GAiLLERY
             </h1>
         </a>
-        
+        <button id="uploadBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold p-2 h-12 rounded">Upload Images</button>
     </header>
 
     <main>
-        <div id="gallery">
-            <a  href="src/img/photo1.webp">
-                <img class="gallery-item" src="src/img/photo1.webp" >
-            </a>
-            <a  href="src/img/photo2.webp">
-                <img class="gallery-item" src="src/img/photo2.webp" >
-            </a>
-            <a  href="src/img/photo3.webp">
-                <img class="gallery-item" src="src/img/photo3.webp" >
-            </a>
-            <a  href="src/img/photo4.webp">
-                <img class="gallery-item" src="src/img/photo4.webp" >
-            </a>
-            <a  href="src/img/photo5.webp">
-                <img class="gallery-item" src="src/img/photo5.webp" >
-            </a>
-        </div>        
+        <div class="dropzone-overlay" id="dropzoneOverlay">
+            <form action="/" class="dropzone" id="uploadForm"></form>
+        </div>
+
+        <div id="gallery"></div>      
+
     </main>
     
-    <script>
-    $(document).ready(function() {
-        $("#gallery").justifiedGallery({
-            captions: false,
-            // lastRow: "hide",
-            rowHeight: 180,
-            margins: 5
-        }).on("jg.complete", function() {
-            window.lightGallery(document.getElementById("gallery"), {
-                autoplayFirstVideo: false,
-                // plugins: [lgThumbnail],
-                plugins: [],
-                // pager: false,
-                galleryId: "nature",
-                licenseKey: '765AA57B-7AC54794-8B6C4E56-50182807',
-                speed: 500,
-                download: false,
-                // mobileSettings: {
-                //     controls: false,
-                //     showCloseIcon: false,
-                //     download: false,
-                //     rotate: false
-                // }
-            });
-        });
-    });
-    </script>
+    <!-- custom js -->
+    <script src="src/app.js"></script>
 
-
-
-    <!-- <script type="text/javascript">
-        lightGallery(document.getElementById('lightgallery'), {
-            plugins: [lgThumbnail],
-            thumbnail: true,
-            download: false,
-            licenseKey: '0000-0000-0000-0000',
-            speed: 500,
-            // ... other settings
-        });
-    </script> -->
 </body>
 </html>
