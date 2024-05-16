@@ -59,11 +59,16 @@ const uploadForm = new Dropzone("#uploadForm", {
 
 // Load images from S3 and display in the gallery
 function loadGallery() {
+    const loadingSpinnerWrapper = document.getElementById('loadingSpinnerWrapper');
+    loadingSpinnerWrapper.style.display = 'flex'; // Show loading spinner wrapper
+
     const params = {
         Bucket: bucketName,
     };
 
     s3.listObjectsV2(params, function(err, data) {
+        loadingSpinnerWrapper.style.display = 'none'; // Hide loading spinner wrapper
+
         if (err) {
             console.error('Error listing objects:', err);
             return;

@@ -36,23 +36,27 @@
 </head> 
 <body>
 
-    <header class="flex flex-ro items-center mt-7 mb-12">
-        <a class="mr-7" href="/">
-            <h1 class="text-4xl font-custom font-bold">
+    <header class="flex flex-ro items-center mt-7 mb-7 sm:mb-12">
+        <a class="mr-5 sm:mr-7" href="/">
+            <h1 class="text-3xl sm:text-4xl font-custom font-bold">
                 GAiLLERY
             </h1>
         </a>
-        <button id="uploadBtn" class="text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold p-3 h-12 rounded">
+        <button id="uploadBtn" 
+        class="text-xs whitespace-nowrap sm:text-sm bg-blue-500 sm:hover:bg-blue-700 text-white font-bold p-3  rounded">
             Upload Images</button>
     </header>
 
-    <main>
+    <main class="">
         <div class="dropzone-overlay" id="dropzoneOverlay">
             <form action="/" class="dropzone" id="uploadForm"></form>
         </div>
 
-        <div id="gallery"></div>      
-
+        <div id="gallery"></div>     
+        <!-- <div class="loading-spinner" id="loadingSpinner"></div>  -->
+        <div class="loading-spinner-wrapper" id="loadingSpinnerWrapper">
+            <div class="loading-spinner" id="loadingSpinner"></div>
+        </div>
     </main>
     
     <!-- custom js -->
