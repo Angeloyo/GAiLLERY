@@ -659,12 +659,24 @@ video {
   inset: -0.25rem;
 }
 
+.bottom-0 {
+  bottom: 0px;
+}
+
 .end-1 {
   inset-inline-end: 0.25rem;
 }
 
+.left-0 {
+  left: 0px;
+}
+
 .right-2 {
   right: 0.5rem;
+}
+
+.start-1 {
+  inset-inline-start: 0.25rem;
 }
 
 .top-2 {
@@ -723,6 +735,10 @@ video {
   clear: none;
 }
 
+.m-1 {
+  margin: 0.25rem;
+}
+
 .m-7 {
   margin: 1.75rem;
 }
@@ -733,6 +749,14 @@ video {
 
 .mb-7 {
   margin-bottom: 1.75rem;
+}
+
+.ml-4 {
+  margin-left: 1rem;
+}
+
+.ml-5 {
+  margin-left: 1.25rem;
 }
 
 .mr-5 {
@@ -850,12 +874,20 @@ video {
   display: none;
 }
 
+.h-1 {
+  height: 0.25rem;
+}
+
 .h-6 {
   height: 1.5rem;
 }
 
 .h-auto {
   height: auto;
+}
+
+.w-1 {
+  width: 0.25rem;
 }
 
 .w-6 {
@@ -876,6 +908,18 @@ video {
 
 .w-full {
   width: 100%;
+}
+
+.flex-1 {
+  flex: 1 1 0%;
+}
+
+.flex-auto {
+  flex: 1 1 auto;
+}
+
+.flex-none {
+  flex: none;
 }
 
 .flex-shrink {
@@ -1095,6 +1139,11 @@ video {
   -webkit-appearance: auto;
      -moz-appearance: auto;
           appearance: auto;
+}
+
+.columns-1 {
+  -moz-columns: 1;
+       columns: 1;
 }
 
 .break-before-auto {
@@ -1857,6 +1906,11 @@ video {
   background-color: rgb(255 0 0 / var(--tw-bg-opacity));
 }
 
+.bg-black {
+  --tw-bg-opacity: 1;
+  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
+}
+
 .bg-blue-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(59 130 246 / var(--tw-bg-opacity));
@@ -1865,6 +1919,15 @@ video {
 .bg-red-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(220 38 38 / var(--tw-bg-opacity));
+}
+
+.bg-slate-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(100 116 139 / var(--tw-bg-opacity));
+}
+
+.bg-opacity-50 {
+  --tw-bg-opacity: 0.5;
 }
 
 .decoration-slice {
@@ -1975,6 +2038,14 @@ video {
 .object-scale-down {
   -o-object-fit: scale-down;
      object-fit: scale-down;
+}
+
+.p-1 {
+  padding: 0.25rem;
+}
+
+.p-2 {
+  padding: 0.5rem;
 }
 
 .p-3 {
@@ -2626,6 +2697,20 @@ body {
   justify-content: center;
 }
 
+.tag-container {
+  display: none;
+  /* Oculto por defecto */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Semi-transparente */
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+}
+
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;
@@ -2710,6 +2795,11 @@ body {
   .sm\:hover\:bg-blue-700:hover {
     --tw-bg-opacity: 1;
     background-color: rgb(29 78 216 / var(--tw-bg-opacity));
+  }
+
+  .sm\:hover\:bg-slate-700:hover {
+    --tw-bg-opacity: 1;
+    background-color: rgb(51 65 85 / var(--tw-bg-opacity));
   }
 }
 
