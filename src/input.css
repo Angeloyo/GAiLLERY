@@ -9,29 +9,7 @@ body {
   min-height: 100vh;
 }
 
-.dropzone-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-.dropzone {
-    width: 80%;
-    height: 80%;
-    border: 0px;
-    /* background: rgba(255, 255, 255, 0.9); */
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5em;
-}
+
 .loading-spinner-wrapper {
     position: fixed;
     top: 0;
@@ -44,6 +22,7 @@ body {
     z-index: 1000;
     pointer-events: none; /* Ensure clicks pass through */
 }
+
 .loading-spinner {
     border: 8px solid #f3f3f3;
     border-top: 8px solid #3498db;
@@ -52,6 +31,16 @@ body {
     height: 60px;
     animation: spin 2s linear infinite;
 }
+
+.loader {
+    animation: spin 2s linear infinite;
+}
+
+.spinner {
+    border-top-color: #3498db; /* Blue spinner color */
+    animation: spin 1s linear infinite;
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
