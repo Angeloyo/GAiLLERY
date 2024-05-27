@@ -12,8 +12,8 @@ from PIL import Image
 import io
 import argparse
 
-s3 = boto3.client('s3', region_name='eu-west-3')  # Cambia 'us-west-2' por tu región
-dynamodb = boto3.resource('dynamodb', region_name='eu-west-3')  # Cambia 'us-west-2' por tu región
+s3 = boto3.client('s3', region_name='eu-west-3')
+dynamodb = boto3.resource('dynamodb', region_name='eu-west-3')
 
 def predict_image(img_data):
     """
@@ -50,20 +50,14 @@ def store_predictions(image_name, predictions, table):
     Returns:
         dict: The response from DynamoDB.
     """
-    # Formatear correctamente las predicciones para DynamoDB
-    # Convertir la probabilidad de decimal a porcentaje y formatear a dos decimales como string
-    labels = [{
-        'Description': {'S': pred[1]},
-        'Probability': {'S': f"{pred[2] * 100:.2f}%"}  # Formatear como porcentaje
-    } for pred in predictions]
+    labels = [{'Description': pred[1], 'Probability': f"{pred[2] * 100:.1f}%"} for pred in predictions]
 
     print(f"Storing predictions for {image_name} in DynamoDB...")
     try:
-        # Asegurar que la estructura del ítem a almacenar es la correcta
         response = table.put_item(
             Item={
-                'PhotoID': image_name,  # Asegurarse que PhotoID es una string simple
-                'Labels': labels        # Asegurarse que Labels es una lista de diccionarios
+                'PhotoID': image_name,
+                'Labels': labels
             }
         )
         print("Data stored successfully.")

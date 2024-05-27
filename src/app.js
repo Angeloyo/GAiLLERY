@@ -38,7 +38,7 @@ async function uploadFiles(files) {
 
         try {
             await AWS.config.credentials.getPromise();
-            const data = await s3.upload(params).promise();
+            await s3.upload(params).promise();
             // console.log('Successfully uploaded file.', data);
             statusText.textContent = `Launching Lambda function for ${file.name}...`;
             
@@ -60,7 +60,7 @@ async function uploadFiles(files) {
 
 function checkLambdaFunctionStatus(fileName) {
     return new Promise((resolve, reject) => {
-        const docClient = new AWS.DynamoDB.DocumentClient();
+
         const params = {
             TableName: 'PhotoTags',
             Key: {
@@ -130,6 +130,7 @@ function loadGallery(showLoader = true) {
 
         const gallery = document.getElementById('gallery');
         gallery.innerHTML = '';
+
         data.Contents.forEach(item => {
             const imageUrl = `https://${bucketName}.s3.${AWS.config.region}.amazonaws.com/${item.Key}`;
         
@@ -138,7 +139,7 @@ function loadGallery(showLoader = true) {
         
             const a = document.createElement('a');
             a.href = imageUrl;
-        
+
             const img = document.createElement('img');
             img.src = imageUrl;
             img.className = 'gallery-item ';
@@ -159,19 +160,30 @@ function loadGallery(showLoader = true) {
             const tagContainer = document.createElement('div');
             tagContainer.className = 'tag-container absolute bottom-0 left-0 w-full text-white bg-black bg-opacity-50 hidden';
             container.appendChild(tagContainer);
-        
+
             // Obtener y mostrar tags
             fetchTags(item.Key, function(tags) {
                 if (tags && tags.Labels) {
+                    var imgTag = '';
                     tags.Labels.forEach(label => {
                         const tag = document.createElement('div');
                         // tag.className = 'p-2';
                         tag.textContent = `${label.Description}: ${label.Probability}`;
+
                         tagContainer.appendChild(tag);
+                        // imgTag += `${label.Description}`;
+                        // imgTag += ': ';
+                        // imgTag += `${label.Probability}`;
+
+                        // imgTag += `${label.Description} (${label.Probability}) `;
+                        imgTag += `<p>${label.Description} (${label.Probability})</p>`;
+
+                        a.setAttribute('data-sub-html', imgTag);
                     });
                 }
             });
-        
+
+
             container.onmouseover = function() {
                 tagContainer.style.display = 'block';
             };

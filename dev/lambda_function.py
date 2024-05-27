@@ -30,6 +30,20 @@ except Exception as e:
     logger.error("Failed to load model", exc_info=True)
 
 def update_status(photo_id, status, table):
+    """
+    Updates the status of a photo in the DynamoDB table.
+
+    Args:
+        photo_id (str): The ID of the photo.
+        status (str): The new status to update.
+        table (boto3.resources.factory.dynamodb.Table): The DynamoDB table.
+
+    Raises:
+        Exception: If there is an error updating the status.
+
+    Returns:
+        dict: The response from the update operation.
+    """
     try:
         response = table.update_item(
             Key={'PhotoID': photo_id},
@@ -38,12 +52,27 @@ def update_status(photo_id, status, table):
             ExpressionAttributeValues={':val': status}
         )
         logger.info(f"Status updated to {status} for {photo_id}")
+        return response
     except Exception as e:
         logger.error("Failed to update status", exc_info=True)
         raise
 
 def store_predictions(image_name, predictions, table):
-    labels = [{'Description': pred[1], 'Probability': f"{pred[2] * 100:.2f}%"} for pred in predictions]
+    """
+    Stores the predictions for an image in the DynamoDB table.
+
+    Args:
+        image_name (str): The name of the image.
+        predictions (list): The list of predictions.
+        table (boto3.resources.factory.dynamodb.Table): The DynamoDB table.
+
+    Raises:
+        Exception: If there is an error storing the predictions.
+
+    Returns:
+        dict: The response from the put operation.
+    """
+    labels = [{'Description': pred[1], 'Probability': f"{pred[2] * 100:.1f}%"} for pred in predictions]
 
     logger.info(f"Storing predictions for {image_name} in DynamoDB...")
     try:
@@ -61,6 +90,16 @@ def store_predictions(image_name, predictions, table):
         raise
 
 def lambda_handler(event, context):
+    """
+    The entry point for the Lambda function.
+
+    Args:
+        event (dict): The event data.
+        context (object): The runtime information.
+
+    Returns:
+        dict: The response from the Lambda function.
+    """
     table = dynamodb.Table('PhotoTags')
     bucket_name = event['Records'][0]['s3']['bucket']['name']
     key = event['Records'][0]['s3']['object']['key']
