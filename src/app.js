@@ -175,7 +175,6 @@ function loadGallery(showLoader = true) {
 
                         imgTag += `${label.Description} (${label.Probability}) `;
 
-                        a.setAttribute('data-sub-html', imgTag);
                     });
                 }
             });
