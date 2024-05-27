@@ -31,14 +31,13 @@ def download_image(image_size=(224, 224)):
     else:
         raise Exception("Failed to download image from Lorem Picsum")
 
-def upload_to_s3(bucket_name, image_data, image_number):
+def upload_to_s3(bucket_name, image_data):
     """
     Uploads an image to an S3 bucket.
 
     Args:
         bucket_name (str): The name of the S3 bucket.
         image_data (bytes): The content of the image to upload.
-        image_number (int): The number of the image being uploaded.
 
     Returns:
         None
@@ -81,7 +80,7 @@ def main(bucket_name, number_of_images):
     print(f"Starting the upload of {number_of_images} images to the S3 bucket '{bucket_name}'.")
     for i in range(number_of_images):
         image_data = download_image()
-        upload_to_s3(bucket_name, image_data, i + 1)
+        upload_to_s3(bucket_name, image_data)
     print("All images have been uploaded successfully.")
 
 if __name__ == "__main__":
