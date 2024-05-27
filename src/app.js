@@ -138,7 +138,6 @@ function loadGallery(showLoader = true) {
             container.className = 'gallery-item-container relative';
         
             const a = document.createElement('a');
-            a.href = imageUrl;
 
             const img = document.createElement('img');
             img.src = imageUrl;
