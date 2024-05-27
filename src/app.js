@@ -144,9 +144,6 @@ function loadGallery(showLoader = true) {
             img.src = imageUrl;
             img.className = 'gallery-item ';
         
-            a.appendChild(img);
-            container.appendChild(a);
-        
             const deleteIcon = document.createElement('div');
             deleteIcon.className = 'delete-icon absolute top-2 right-2 w-6 h-6 bg-red-600 text-white text-center rounded-full cursor-pointer flex items-center justify-center';
             deleteIcon.innerHTML = 'X';
@@ -154,12 +151,9 @@ function loadGallery(showLoader = true) {
                 deleteImage(item.Key);
             };
         
-            container.appendChild(deleteIcon);
-        
             // Agregar tags bajo la imagen
             const tagContainer = document.createElement('div');
             tagContainer.className = 'tag-container absolute bottom-0 left-0 w-full text-white bg-black bg-opacity-50 hidden';
-            container.appendChild(tagContainer);
 
             // Obtener y mostrar tags
             fetchTags(item.Key, function(tags) {
@@ -173,7 +167,14 @@ function loadGallery(showLoader = true) {
 
                         tagContainer.appendChild(tag);
 
-                        imgTag += `${label.Description} (${label.Probability}) `;
+                        imgTag += `<p>${label.Description} (${label.Probability})</p>`;
+
+                        a.setAttribute('data-sub-html', imgTag);
+
+                        a.appendChild(img);
+                        container.appendChild(a);
+                        container.appendChild(deleteIcon);
+                        container.appendChild(tagContainer);
 
                     });
                 }
