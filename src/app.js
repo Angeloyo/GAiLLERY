@@ -27,9 +27,8 @@ async function uploadFiles(files) {
 
     for (let index = 0; index < files.length; index++) {
         const file = files[index];
-        console.log(`Processing file ${index + 1} of ${files.length}: ${file.name}`);
+        // console.log(`Processing file ${index + 1} of ${files.length}: ${file.name}`);
         statusText.textContent = `Uploading file ${index + 1} of ${files.length}: ${file.name}`;
-        // await sleep(1000);
 
         const params = {
             Bucket: bucketName,
@@ -42,7 +41,6 @@ async function uploadFiles(files) {
             const data = await s3.upload(params).promise();
             // console.log('Successfully uploaded file.', data);
             statusText.textContent = `Launching Lambda function for ${file.name}...`;
-            // await sleep(1000);
             
             await checkLambdaFunctionStatus(file.name);
             
@@ -52,40 +50,43 @@ async function uploadFiles(files) {
         }
     }
 
-    // await sleep(2000);
+    statusText.textContent = `Finishing...`;
+    await sleep(3000);
     overlay.classList.add('hidden'); 
     statusText.textContent = ''; 
     location.reload(); 
 
 }
 
-function checkLambdaFunctionStatus(fileName, callback) {
-    const docClient = new AWS.DynamoDB.DocumentClient();
-    const params = {
-        TableName: 'PhotoTags',
-        Key: {
-            'PhotoID': fileName
-        }
-    };
-
-    const intervalId = setInterval(async () => {
-        try {
-            const data = await docClient.get(params).promise();
-            const status = data.Item ? data.Item.Status : 'Pending...';
-            document.getElementById('statusText').textContent = `Status for ${fileName}: ${status}`;
-
-            if (status === 'Done' || status === 'Error') {
-                clearInterval(intervalId);
-                resolve(status);
+function checkLambdaFunctionStatus(fileName) {
+    return new Promise((resolve, reject) => {
+        const docClient = new AWS.DynamoDB.DocumentClient();
+        const params = {
+            TableName: 'PhotoTags',
+            Key: {
+                'PhotoID': fileName
             }
-            
-        } catch (error) {
-            clearInterval(intervalId);
-            reject(error);
-            console.error("Error fetching status from DynamoDB:", error);
-            document.getElementById('statusText').textContent = `Failed to fetch status for ${fileName}: ${error.message}`;
-        }
-    }, 200);
+        };
+
+        const intervalId = setInterval(async () => {
+            try {
+                const data = await docClient.get(params).promise();
+                const status = data.Item ? data.Item.Status : 'Pending...';
+                document.getElementById('statusText').textContent = `Status for ${fileName}: ${status}`;
+
+                if (status === 'Done.' || status === 'Error') {
+                    clearInterval(intervalId);
+                    resolve(status); // Resuelve la promesa cuando el estado es Done o Error
+                }
+                
+            } catch (error) {
+                clearInterval(intervalId);
+                reject(error); // Rechaza la promesa en caso de error
+                console.error("Error fetching status from DynamoDB:", error);
+                document.getElementById('statusText').textContent = `Failed to fetch status for ${fileName}: ${error.message}`;
+            }
+        }, 200);
+    });
 }
 
 function fetchTags(key, callback) {

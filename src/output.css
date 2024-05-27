@@ -695,6 +695,10 @@ video {
   isolation: auto;
 }
 
+.z-50 {
+  z-index: 50;
+}
+
 .order-last {
   order: 9999;
 }
