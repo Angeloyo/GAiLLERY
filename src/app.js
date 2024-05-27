@@ -167,15 +167,12 @@ function loadGallery(showLoader = true) {
                     var imgTag = '';
                     tags.Labels.forEach(label => {
                         const tag = document.createElement('div');
-                        // tag.className = 'p-2';
+
+                        tag.className = 'text-xs';
                         tag.textContent = `${label.Description}: ${label.Probability}`;
 
                         tagContainer.appendChild(tag);
-                        // imgTag += `${label.Description}`;
-                        // imgTag += ': ';
-                        // imgTag += `${label.Probability}`;
 
-                        // imgTag += `${label.Description} (${label.Probability}) `;
                         imgTag += `<p>${label.Description} (${label.Probability})</p>`;
 
                         a.setAttribute('data-sub-html', imgTag);
