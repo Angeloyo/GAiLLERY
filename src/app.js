@@ -5,71 +5,90 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 });
 
 const s3 = new AWS.S3();
+const lambda = new AWS.Lambda();
 const bucketName = 'gaillery-img-bucket1';
-Dropzone.autoDiscover = false;
+const docClient = new AWS.DynamoDB.DocumentClient();
 
-let dz;
-
-document.getElementById('uploadBtn').addEventListener('click', function() {
-    document.getElementById('dropzoneOverlay').style.display = 'flex';
+document.getElementById('fileInput').addEventListener('change', function(event) {
+    const files = event.target.files;
+    if (files.length > 0) {
+        uploadFiles(files);
+    }
 });
 
-document.getElementById('dropzoneOverlay').addEventListener('click', function(event) {
-    if (event.target.id === 'dropzoneOverlay') {
-        // document.getElementById('dropzoneOverlay').style.display = 'none';
-        location.reload();
-        if (dz) {
-            dz.removeAllFiles(true);
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function uploadFiles(files) {
+    const overlay = document.getElementById('overlay');
+    const statusText = document.getElementById('statusText'); // Asegúrate de tener este elemento en tu HTML
+    overlay.classList.remove('hidden'); // Mostrar el overlay con el loader
+
+    for (let index = 0; index < files.length; index++) {
+        const file = files[index];
+        console.log(`Processing file ${index + 1} of ${files.length}: ${file.name}`);
+        statusText.textContent = `Uploading file ${index + 1} of ${files.length}: ${file.name}`;
+        // await sleep(1000);
+
+        const params = {
+            Bucket: bucketName,
+            Key: file.name,
+            Body: file
+        };
+
+        try {
+            await AWS.config.credentials.getPromise();
+            const data = await s3.upload(params).promise();
+            // console.log('Successfully uploaded file.', data);
+            statusText.textContent = `Launching Lambda function for ${file.name}...`;
+            // await sleep(1000);
+            
+            await checkLambdaFunctionStatus(file.name);
+            
+        } catch (error) {
+            console.error('Error uploading file or processing Lambda:', error);
+            statusText.textContent = `Error processing ${file.name}: ${error.message}`;
         }
     }
-});
 
-document.getElementById('closeDropzone').addEventListener('click', function() {
-    location.reload();
-    if (dz) {
-        dz.removeAllFiles(true);
-    }
-});
+    // await sleep(2000);
+    overlay.classList.add('hidden'); 
+    statusText.textContent = ''; 
+    location.reload(); 
 
-dz = new Dropzone("#uploadForm", {
-    autoProcessQueue: false,
-    acceptedFiles: 'image/*',
-    init: function() {
-        const dzInstance = this;
+}
 
-        dzInstance.on("addedfile", function(file) {
-            const params = {
-                Bucket: bucketName,
-                Key: file.name,
-                Body: file
-            };
+function checkLambdaFunctionStatus(fileName, callback) {
+    const docClient = new AWS.DynamoDB.DocumentClient();
+    const params = {
+        TableName: 'PhotoTags',
+        Key: {
+            'PhotoID': fileName
+        }
+    };
 
-            AWS.config.credentials.refresh(error => {
-                if (error) {
-                    console.error('Error refreshing credentials:', error);
-                    dzInstance.emit("error", file, error.message);
-                    dzInstance.emit("complete", file);
-                } else {
-                    s3.upload(params, function(err, data) {
-                        if (err) {
-                            console.error('Error uploading file:', err);
-                            dzInstance.emit("error", file, err.message);
-                            dzInstance.emit("complete", file);
-                        } else {
-                            console.log('Successfully uploaded file.', data);
-                            dzInstance.emit("success", file, data);
-                            dzInstance.emit("complete", file);
-                            // loadGallery();
-                        }
-                    });
-                }
-            });
-        });
-    }
-});
+    const intervalId = setInterval(async () => {
+        try {
+            const data = await docClient.get(params).promise();
+            const status = data.Item ? data.Item.Status : 'Pending...';
+            document.getElementById('statusText').textContent = `Status for ${fileName}: ${status}`;
+
+            if (status === 'Done' || status === 'Error') {
+                clearInterval(intervalId);
+                resolve(status);
+            }
+            
+        } catch (error) {
+            clearInterval(intervalId);
+            reject(error);
+            console.error("Error fetching status from DynamoDB:", error);
+            document.getElementById('statusText').textContent = `Failed to fetch status for ${fileName}: ${error.message}`;
+        }
+    }, 200);
+}
 
 function fetchTags(key, callback) {
-    const docClient = new AWS.DynamoDB.DocumentClient();
     const params = {
         TableName: 'PhotoTags', // Asegúrate de que este es el nombre correcto de tu tabla
         Key: {
@@ -85,7 +104,6 @@ function fetchTags(key, callback) {
         }
     });
 }
-
 
 // Load images from S3 and display in the gallery
 function loadGallery(showLoader = true) {
@@ -147,7 +165,7 @@ function loadGallery(showLoader = true) {
                     tags.Labels.forEach(label => {
                         const tag = document.createElement('div');
                         // tag.className = 'p-2';
-                        tag.textContent = `${label.Description.S}: ${label.Probability.S}`;
+                        tag.textContent = `${label.Description}: ${label.Probability}`;
                         tagContainer.appendChild(tag);
                     });
                 }
