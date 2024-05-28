@@ -22,8 +22,8 @@ function sleep(ms) {
 
 async function uploadFiles(files) {
     const overlay = document.getElementById('overlay');
-    const statusText = document.getElementById('statusText'); // Asegúrate de tener este elemento en tu HTML
-    overlay.classList.remove('hidden'); // Mostrar el overlay con el loader
+    const statusText = document.getElementById('statusText');
+    overlay.classList.remove('hidden'); 
 
     for (let index = 0; index < files.length; index++) {
         const file = files[index];
@@ -46,7 +46,11 @@ async function uploadFiles(files) {
             
         } catch (error) {
             console.error('Error uploading file or processing Lambda:', error);
-            statusText.textContent = `Error processing ${file.name}: ${error.message}`;
+            statusText.textContent = `Error processing ${file.name}`;
+            await sleep(2000);
+            overlay.classList.add('hidden'); 
+            statusText.textContent = ''; 
+            location.reload(); 
         }
     }
 
@@ -74,9 +78,13 @@ function checkLambdaFunctionStatus(fileName) {
                 const status = data.Item ? data.Item.Status : 'Pending...';
                 document.getElementById('statusText').textContent = `Status for ${fileName}: ${status}`;
 
-                if (status === 'Done.' || status === 'Error') {
+                if (status === 'Done.') {
                     clearInterval(intervalId);
                     resolve(status); // Resuelve la promesa cuando el estado es Done o Error
+                }
+                else if(status === 'ERROR'){
+                    clearInterval(intervalId);
+                    reject(status); // Rechaza la promesa en caso de error
                 }
                 
             } catch (error) {
@@ -107,21 +115,21 @@ function fetchTags(key, callback) {
 }
 
 // Load images from S3 and display in the gallery
-function loadGallery(showLoader = true) {
-    const loadingSpinnerWrapper = document.getElementById('loadingSpinnerWrapper');
+function loadGallery() {
 
-    if (showLoader) {
-        loadingSpinnerWrapper.style.display = 'flex';
-    }
+    const loadingSpinnerWrapper = document.getElementById('loadingSpinnerWrapper');
+    const deleteAllButton = document.getElementById('deleteAllBtn');
+
+    loadingSpinnerWrapper.style.display = 'flex';
+    deleteAllButton.style.display = 'none';
 
     const params = {
         Bucket: bucketName,
     };
 
     s3.listObjectsV2(params, function(err, data) {
-        if (showLoader) {
-            loadingSpinnerWrapper.style.display = 'none';
-        }
+        
+        loadingSpinnerWrapper.style.display = 'none';
 
         if (err) {
             console.error('Error listing objects:', err);
@@ -131,7 +139,15 @@ function loadGallery(showLoader = true) {
         const gallery = document.getElementById('gallery');
         gallery.innerHTML = '';
 
+        if(data.Contents.length === 0) {
+            gallery.innerHTML = '<p class="text-center text-lg m-10 font-bold">No images found in the bucket.</p>';
+            return;
+        }
+
+        deleteAllButton.style.display = 'block';
+        
         data.Contents.forEach(item => {
+
             const imageUrl = `https://${bucketName}.s3.${AWS.config.region}.amazonaws.com/${item.Key}`;
         
             const container = document.createElement('div');
@@ -152,20 +168,21 @@ function loadGallery(showLoader = true) {
             deleteIcon.innerHTML = 'X';
             deleteIcon.onclick = function() {
                 deleteImage(item.Key);
-            };
-        
+            };        
             container.appendChild(deleteIcon);
-        
-            // Agregar tags bajo la imagen
+
             const tagContainer = document.createElement('div');
             tagContainer.className = 'tag-container absolute bottom-0 left-0 w-full text-white bg-black bg-opacity-50 hidden';
             container.appendChild(tagContainer);
 
-            // Obtener y mostrar tags
             fetchTags(item.Key, function(tags) {
+
                 if (tags && tags.Labels) {
+                
                     var imgTag = '';
+                
                     tags.Labels.forEach(label => {
+                
                         const tag = document.createElement('div');
 
                         tag.className = 'text-xs';
@@ -176,10 +193,10 @@ function loadGallery(showLoader = true) {
                         imgTag += `<p>${label.Description} (${label.Probability})</p>`;
 
                         a.setAttribute('data-sub-html', imgTag);
+
                     });
                 }
             });
-
 
             container.onmouseover = function() {
                 tagContainer.style.display = 'block';
@@ -231,7 +248,7 @@ function deleteImage(key) {
         if (err) {
             console.error('Error deleting image from S3:', err);
         } else {
-            console.log('Successfully deleted image from S3:', data);
+            // console.log('Successfully deleted image from S3:', data);
             
             // Parameters for deleting from DynamoDB
             const dynamoDBParams = {
@@ -246,7 +263,7 @@ function deleteImage(key) {
                 if (err) {
                     console.error('Error deleting tags from DynamoDB:', err);
                 } else {
-                    console.log('Successfully deleted tags from DynamoDB:', data);
+                    // console.log('Successfully deleted tags from DynamoDB:', data);
                 }
             });
 

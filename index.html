@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GAiLLERY</title>
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -30,59 +32,51 @@
     <!-- <link href="./src/output.min.css" rel="stylesheet"> -->
     
 </head> 
-<body class="font-custom p-4 sm:p-7">
-
+<body class="flex flex-col min-h-screen font-custom p-4 sm:p-7">
     <header class="flex flex-wrap items-center my-5 mx-2">
         <a href="/" class="shrink-0 mr-5 md:mr-7">
-            <h1 class="text-4xl md:text-5xl font-bold">
-                GAiLLERY
-            </h1>
+            <h1 class="text-4xl md:text-5xl font-bold">GAiLLERY</h1>
         </a>
-        <div class="flex-grow order-last  text-left 
-            mt-4 ">
+        <div class="flex-grow order-last text-left mt-4">
             <h3 class="text-sm md:text-lg">
-                Made by Ángel Sánchez Guerrero. Project for Computer Vision, Multimodal Interaction & Cloud Computing @ Sapienza Università di Roma - <a class="underline" target="_blank" href="https://github.com/angeloyo/sapienza-project">GitHub Repo</a>
+                Made by Ángel Sánchez Guerrero. Project for Computer Vision, Multimodal Interaction & Cloud Computing @ Sapienza Università di Roma - 
+                <a class="underline" target="_blank" href="https://github.com/angeloyo/sapienza-project">GitHub Repo</a>
             </h3>
         </div>
         <div class="flex-grow-0 flex-shrink-0 space-x-2 mt-5 mb-2 sm:my-0">
-
             <button 
             class="text-sm md:text-base bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded"
             onclick="document.getElementById('fileInput').click();">
                 Upload Image
             </button>
-            
             <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
-
             <!-- <button id="selectBtn" class="text-sm md:text-base bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-3 rounded">
                 Select Images
             </button> -->
-
-            <button id="selectBtn" class="text-sm md:text-base bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-3 rounded">
+            <button id="randomBtn" class="text-sm md:text-base bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-3 rounded">
                 Random Images
             </button>
-
         </div>
     </header>
 
-    <main class="">
-
+    <main class="flex-grow">
         <div id="overlay" 
         class="fixed inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center space-y-4 hidden z-50">
             <div class="spinner w-16 h-16 border-4 border-solid border-gray-800 rounded-full"></div>
             <p id="statusText" class="text-white text-center">Loading...</p>
         </div>
-
-        <div id="gallery"></div>     
-        
+        <div id="gallery"></div>
         <div class="loading-spinner-wrapper" id="loadingSpinnerWrapper">
             <div class="loading-spinner" id="loadingSpinner"></div>
         </div>
-
     </main>
-    
-    <!-- custom js -->
-    <script src="src/app.js"></script>
 
+    <footer class="w-full text-center mt-10 flex items-center justify-center">
+        <button id="deleteAllBtn" class="underline">Delete all images</button>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="src/app.js"></script>
+    <script src="src/random_img.js"></script>
 </body>
 </html>
