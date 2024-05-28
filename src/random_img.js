@@ -5,13 +5,13 @@ document.getElementById('randomBtn').addEventListener('click', function() {
             alert("Error: " + err);
             return;
         }
-        uploadImages();
+        uploadRandomImages();
     });
 });
 
-async function uploadImages() {
+async function uploadRandomImages() {
 
-    const numImages = 10;
+    const numImages = 30;
 
     const overlay = document.getElementById('overlay');
     const statusText = document.getElementById('statusText');
@@ -23,9 +23,11 @@ async function uploadImages() {
     });
 
     for (let i = 0; i < numImages; i++) {
+
         try {
+        
             statusText.textContent = `Downloading file ${i + 1} of ${numImages}: random_image_${Date.now()}_${i}.jpg`;
-            const response = await fetch(`https://picsum.photos/224/224`);
+            const response = await fetch(`https://picsum.photos/1024/1024`);
             const blob = await response.blob();
 
             const params = {
@@ -35,17 +37,11 @@ async function uploadImages() {
             };
 
             statusText.textContent = `Uploading file ${i + 1} of ${numImages}: ${params.Key}`;
-            await new Promise((resolve, reject) => {
-                s3.upload(params, function(err, data) {
-                    if (err) {
-                        console.error("Error", err);
-                        reject(err);
-                    } else {
-                        // console.log("Upload Success", data.Location);
-                        resolve(data);
-                    }
-                });
-            });
+
+            await s3.upload(params).promise();
+            statusText.textContent = `Launching Lambda function for ${params.Key}...`;
+            await checkLambdaFunctionStatus(params.Key);
+
         } catch (error) {
             console.error("Failed to fetch or upload image", error);
         }

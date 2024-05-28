@@ -7,7 +7,7 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 const s3 = new AWS.S3();
 const lambda = new AWS.Lambda();
 const bucketName = 'gaillery-img-bucket1';
-const docClient = new AWS.DynamoDB.DocumentClient();
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
 document.getElementById('fileInput').addEventListener('change', function(event) {
     const files = event.target.files;
@@ -37,11 +37,11 @@ async function uploadFiles(files) {
         };
 
         try {
+
             await AWS.config.credentials.getPromise();
             await s3.upload(params).promise();
             // console.log('Successfully uploaded file.', data);
             statusText.textContent = `Launching Lambda function for ${file.name}...`;
-            
             await checkLambdaFunctionStatus(file.name);
             
         } catch (error) {
@@ -74,7 +74,7 @@ function checkLambdaFunctionStatus(fileName) {
 
         const intervalId = setInterval(async () => {
             try {
-                const data = await docClient.get(params).promise();
+                const data = await dynamoDB.get(params).promise();
                 const status = data.Item ? data.Item.Status : 'Pending...';
                 document.getElementById('statusText').textContent = `Status for ${fileName}: ${status}`;
 
@@ -105,7 +105,7 @@ function fetchTags(key, callback) {
         }
     };
 
-    docClient.get(params, function(err, data) {
+    dynamoDB.get(params, function(err, data) {
         if (err) {
             console.error("Error fetching tags from DynamoDB:", err);
         } else {
@@ -114,13 +114,15 @@ function fetchTags(key, callback) {
     });
 }
 
-// Load images from S3 and display in the gallery
-function loadGallery() {
+function loadGallery(showLoader = true) {
 
     const loadingSpinnerWrapper = document.getElementById('loadingSpinnerWrapper');
     const deleteAllButton = document.getElementById('deleteAllBtn');
 
-    loadingSpinnerWrapper.style.display = 'flex';
+    if (showLoader) {
+        loadingSpinnerWrapper.style.display = 'flex';
+    }
+    
     deleteAllButton.style.display = 'none';
 
     const params = {
@@ -129,7 +131,9 @@ function loadGallery() {
 
     s3.listObjectsV2(params, function(err, data) {
         
-        loadingSpinnerWrapper.style.display = 'none';
+        if (showLoader) {
+            loadingSpinnerWrapper.style.display = 'none';
+        }
 
         if (err) {
             console.error('Error listing objects:', err);
@@ -140,7 +144,7 @@ function loadGallery() {
         gallery.innerHTML = '';
 
         if(data.Contents.length === 0) {
-            gallery.innerHTML = '<p class="text-center text-lg m-10 font-bold">No images found in the bucket.</p>';
+            gallery.innerHTML = '<p class="text-center text-lg m-10 font-bold">No images found.</p>';
             return;
         }
 
@@ -232,18 +236,13 @@ function loadGallery() {
     });
 }
 
-// Function to delete an image from S3
 function deleteImage(key) {
-    const s3 = new AWS.S3();
-    const dynamoDB = new AWS.DynamoDB.DocumentClient();
-    
-    // Parameters for deleting from S3
+
     const s3Params = {
         Bucket: bucketName,
         Key: key
     };
 
-    // Delete the image from S3
     s3.deleteObject(s3Params, function(err, data) {
         if (err) {
             console.error('Error deleting image from S3:', err);
@@ -273,7 +272,54 @@ function deleteImage(key) {
     });
 }
 
-$(document).ready(function() {
-    // Load gallery on page load
-    loadGallery();
-});
+function deleteAllImages() {
+
+    const s3Params = {
+        Bucket: bucketName,
+    };
+
+    s3.listObjectsV2(s3Params, function(err, data) {
+        if (err) {
+            console.error('Error listing objects:', err);
+            return;
+        }
+
+        data.Contents.forEach(item => {
+
+            deleteParams = {
+                Bucket: bucketName,
+                Key: item.Key
+            };
+
+            s3.deleteObject(deleteParams, function(err, data) {
+                if (err) {
+                    console.error('Error deleting image from S3:', err);
+                } else {
+                    
+                    const dynamoDBParams = {
+                        TableName: 'PhotoTags', 
+                        Key: {
+                            'PhotoID': item.Key
+                        }
+                    };
+
+                    dynamoDB.delete(dynamoDBParams, function(err, data) {
+                        if (err) {
+                            console.error('Error deleting tags from DynamoDB:', err);
+                        } else {
+                            // console.log('Successfully deleted tags from DynamoDB:', data);
+                            // loadGallery(false);
+                            location.reload();
+                        }
+                    });
+
+                }
+            });
+
+        });
+    });
+
+}
+
+
+loadGallery();
