@@ -263,63 +263,89 @@ function deleteImage(key) {
                     console.error('Error deleting tags from DynamoDB:', err);
                 } else {
                     // console.log('Successfully deleted tags from DynamoDB:', data);
+                    loadGallery(false);
                 }
             });
 
             // Reload gallery without showing loader
-            loadGallery(false);
+            // loadGallery(false);
         }
     });
 }
 
-function deleteAllImages() {
+async function uploadRandomImages(numImages = 5) {
 
+    const overlay = document.getElementById('overlay');
+    const statusText = document.getElementById('statusText');
+    overlay.classList.remove('hidden');
+
+    for (let i = 0; i < numImages; i++) {
+
+        try {
+        
+            statusText.textContent = `Downloading file ${i + 1} of ${numImages}: random_image_${Date.now()}_${i}.jpg`;
+            const response = await fetch(`https://picsum.photos/1024/1024`);
+            const blob = await response.blob();
+
+            const params = {
+                Bucket: 'gaillery-img-bucket1',
+                Key: `random_image_${Date.now()}_${i+1}.jpg`,
+                Body: blob,
+            };
+
+            statusText.textContent = `Uploading file ${i + 1} of ${numImages}: ${params.Key}`;
+
+            await s3.upload(params).promise();
+            statusText.textContent = `Launching Lambda function for ${params.Key}...`;
+            await checkLambdaFunctionStatus(params.Key);
+
+        } catch (error) {
+            console.error("Failed to fetch or upload image", error);
+        }
+    }
+
+    statusText.textContent = `Finishing...`;
+    await sleep(2000);
+    overlay.classList.add('hidden');
+    statusText.textContent = '';
+    location.reload();
+}
+
+async function deleteAllImages() {
     const s3Params = {
         Bucket: bucketName,
     };
 
-    s3.listObjectsV2(s3Params, function(err, data) {
-        if (err) {
-            console.error('Error listing objects:', err);
-            return;
-        }
+    try {
+        const data = await s3.listObjectsV2(s3Params).promise();
 
-        data.Contents.forEach(item => {
-
-            deleteParams = {
+        const deletePromises = data.Contents.map(async item => {
+            const deleteParams = {
                 Bucket: bucketName,
                 Key: item.Key
             };
 
-            s3.deleteObject(deleteParams, function(err, data) {
-                if (err) {
-                    console.error('Error deleting image from S3:', err);
-                } else {
-                    
-                    const dynamoDBParams = {
-                        TableName: 'PhotoTags', 
-                        Key: {
-                            'PhotoID': item.Key
-                        }
-                    };
+            await s3.deleteObject(deleteParams).promise();
 
-                    dynamoDB.delete(dynamoDBParams, function(err, data) {
-                        if (err) {
-                            console.error('Error deleting tags from DynamoDB:', err);
-                        } else {
-                            // console.log('Successfully deleted tags from DynamoDB:', data);
-                            // loadGallery(false);
-                            location.reload();
-                        }
-                    });
-
+            const dynamoDBParams = {
+                TableName: 'PhotoTags',
+                Key: {
+                    'PhotoID': item.Key
                 }
-            });
+            };
 
+            await dynamoDB.delete(dynamoDBParams).promise();
         });
-    });
 
+        await Promise.all(deletePromises);
+
+        console.log('All images deleted successfully.');
+
+        location.reload();
+
+    } catch (err) {
+        console.error('Error processing deletions:', err);
+    }
 }
-
 
 loadGallery();
