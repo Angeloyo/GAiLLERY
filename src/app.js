@@ -263,7 +263,8 @@ function deleteImage(key) {
                     console.error('Error deleting tags from DynamoDB:', err);
                 } else {
                     // console.log('Successfully deleted tags from DynamoDB:', data);
-                    loadGallery(false);
+                    // loadGallery(false);
+                    location.reload();
                 }
             });
 
