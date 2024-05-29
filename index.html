@@ -33,31 +33,39 @@
     
 </head> 
 <body class="flex flex-col min-h-screen font-custom p-4 sm:p-7">
-    <header class="flex flex-wrap items-center my-5 mx-2">
-        <a href="/" class="shrink-0 mr-5 md:mr-7">
-            <h1 class="text-4xl md:text-5xl font-bold">GAiLLERY</h1>
-        </a>
+    <header class="flex flex-wrap flex-col  items-start my-5 mx-2">
+
+        <div class="sm:flex-row flex-col flex flex-wrap">
+
+            <a href="/" class="shrink-0 mr-5 md:mr-7">
+                <h1 class="text-4xl md:text-5xl font-bold">GAiLLERY</h1>
+            </a>
+    
+            <div class="flex-grow-0 flex-shrink-0 space-x-2 mt-5 mb-2 sm:my-0">
+                <button 
+                class="text-sm md:text-base bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded"
+                onclick="document.getElementById('fileInput').click();">
+                    Upload Image
+                </button>
+                <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
+                <!-- <button id="selectBtn" class="text-sm md:text-base bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-3 rounded">
+                    Select Images
+                </button> -->
+                <button id="randomBtn" onclick="uploadRandomImages(10)"
+                    class="text-sm md:text-base bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-3 rounded">
+                    Random Images
+                </button>
+            </div>
+
+        </div>
+
         <div class="flex-grow order-last text-left mt-4">
             <h3 class="text-sm md:text-lg">
                 Made by Ángel Sánchez Guerrero. Project for Computer Vision, Multimodal Interaction & Cloud Computing @ Sapienza Università di Roma - 
                 <a class="underline" target="_blank" href="https://github.com/angeloyo/sapienza-project">GitHub Repo</a>
             </h3>
         </div>
-        <div class="flex-grow-0 flex-shrink-0 space-x-2 mt-5 mb-2 sm:my-0">
-            <button 
-            class="text-sm md:text-base bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded"
-            onclick="document.getElementById('fileInput').click();">
-                Upload Image
-            </button>
-            <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
-            <!-- <button id="selectBtn" class="text-sm md:text-base bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-3 rounded">
-                Select Images
-            </button> -->
-            <button id="randomBtn" onclick="uploadRandomImages(20)"
-                class="text-sm md:text-base bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-3 rounded">
-                Random Images
-            </button>
-        </div>
+        
     </header>
 
     <main class="flex-grow">
