@@ -985,6 +985,21 @@ video {
   display: none;
 }
 
+.size-2 {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.size-3 {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.size-4 {
+  width: 1rem;
+  height: 1rem;
+}
+
 .size-5 {
   width: 1.25rem;
   height: 1.25rem;
@@ -2122,6 +2137,16 @@ video {
   background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
 
+.bg-red-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 202 202 / var(--tw-bg-opacity));
+}
+
+.bg-red-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(248 113 113 / var(--tw-bg-opacity));
+}
+
 .bg-red-600 {
   --tw-bg-opacity: 1;
   background-color: rgb(220 38 38 / var(--tw-bg-opacity));
@@ -2900,66 +2925,8 @@ body {
   }
 }
 
-.gallery-item-container {
-  position: relative;
-  display: inline-block;
-}
-
-.gallery-item {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.delete-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 20px;
-  height: 20px;
-  background: rgba(255, 0, 0, 0.7);
-  color: white;
-  font-size: 16px;
-  line-height: 20px;
-  text-align: center;
-  border-radius: 50%;
-  cursor: pointer;
-  display: none;
-}
-
 .gallery-item-container:hover .delete-icon {
   display: block;
-}
-
-.close-btn {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #fff;
-  color: #000;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tag-container {
-  display: none;
-  /* Oculto por defecto */
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  /* Semi-transparente */
-  color: white;
-  text-align: center;
-  padding: 10px 0;
 }
 
 @media (min-width: 640px) {
@@ -3006,6 +2973,11 @@ body {
 .hover\:bg-slate-700:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(51 65 85 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-red-500:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
 
 .hover\:font-bold:hover {
