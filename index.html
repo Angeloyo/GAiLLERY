@@ -41,19 +41,31 @@
                 <h1 class="text-4xl md:text-5xl font-bold">GAiLLERY</h1>
             </a>
     
-            <div class="flex-grow-0 flex-shrink-0 space-x-2 mt-5 mb-2 sm:my-0">
+            <div class="flex-grow-0 flex-shrink-0 space-x-2 sm:space-x-4 mt-5 mb-2 sm:my-0 flex">
+                
                 <button 
                 class="text-sm md:text-base bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded"
                 onclick="document.getElementById('fileInput').click();">
                     Upload Image
                 </button>
+
                 <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
+                
                 <!-- <button id="selectBtn" class="text-sm md:text-base bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-3 rounded">
                     Select Images
                 </button> -->
+                
                 <button id="randomBtn" onclick="uploadRandomImages(10)"
                     class="text-sm md:text-base bg-slate-500 hover:bg-slate-700 text-white font-bold py-2 px-3 rounded">
                     Random Images
+                </button>
+
+                <button class="bg-slate-500 hover:bg-slate-700 p-3 rounded-full text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                        <path d="M7 4a3 3 0 0 1 6 0v6a3 3 0 1 1-6 0V4Z" />
+                        <path d="M5.5 9.643a.75.75 0 0 0-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5h-1.5a.75.75 0 0 0 0 1.5h4.5a.75.75 0 0 0 0-1.5h-1.5v-1.546A6.001 6.001 0 0 0 16 10v-.357a.75.75 0 0 0-1.5 0V10a4.5 4.5 0 0 1-9 0v-.357Z" />
+                      </svg>
+                      
                 </button>
             </div>
 
