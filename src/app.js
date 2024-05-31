@@ -26,8 +26,9 @@ async function uploadFiles(files) {
     overlay.classList.remove('hidden'); 
 
     for (let index = 0; index < files.length; index++) {
+        
         const file = files[index];
-        // console.log(`Processing file ${index + 1} of ${files.length}: ${file.name}`);
+
         statusText.textContent = `Uploading file ${index + 1} of ${files.length}: ${file.name}`;
 
         const params = {
@@ -155,7 +156,7 @@ function loadGallery(showLoader = true) {
             const imageUrl = `https://${bucketName}.s3.${AWS.config.region}.amazonaws.com/${item.Key}`;
         
             const container = document.createElement('div');
-            container.className = 'gallery-item-container inline-block relative ';
+            container.className = 'inline-block relative ';
         
             const a = document.createElement('a');
             a.href = imageUrl;
@@ -208,9 +209,11 @@ function loadGallery(showLoader = true) {
 
             container.onmouseover = function() {
                 tagContainer.style.display = 'block';
+                deleteIcon.style.display = 'block';
             };
             container.onmouseout = function() {
                 tagContainer.style.display = 'none';
+                deleteIcon.style.display = 'none';
             };
         
             gallery.appendChild(container);

@@ -2925,10 +2925,6 @@ body {
   }
 }
 
-.gallery-item-container:hover .delete-icon {
-  display: block;
-}
-
 @media (min-width: 640px) {
   .sm\:container {
     width: 100%;
@@ -2970,14 +2966,14 @@ body {
   background-color: rgb(29 78 216 / var(--tw-bg-opacity));
 }
 
-.hover\:bg-slate-700:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(51 65 85 / var(--tw-bg-opacity));
-}
-
 .hover\:bg-red-500:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(239 68 68 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-slate-700:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(51 65 85 / var(--tw-bg-opacity));
 }
 
 .hover\:font-bold:hover {
