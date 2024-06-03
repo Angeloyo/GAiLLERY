@@ -1,0 +1,21 @@
+config:
+  target: 'https://gaillery.angeloyo.com'
+  phases:
+    - duration: 30
+      arrivalRate: 0
+      rampTo: 5
+      name: "Warm-up phase"
+    - duration: 60
+      arrivalRate: 5
+      name: "Steady state phase"
+    - duration: 30
+      arrivalRate: 5
+      rampTo: 0
+      name: "Ramp-down phase"
+  processor: "./script-task-1.js"
+
+scenarios:
+  - flow:
+    - get:
+        url: "/"
+    - function: "loadContent"

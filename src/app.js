@@ -5,7 +5,6 @@ AWS.config.credentials = new AWS.CognitoIdentityCredentials({
 });
 
 const s3 = new AWS.S3();
-const lambda = new AWS.Lambda();
 const bucketName = 'gaillery-img-bucket1';
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
@@ -100,7 +99,7 @@ function checkLambdaFunctionStatus(fileName) {
 
 function fetchTags(key, callback) {
     const params = {
-        TableName: 'PhotoTags', // Asegúrate de que este es el nombre correcto de tu tabla
+        TableName: 'PhotoTags',
         Key: {
             'PhotoID': key
         }

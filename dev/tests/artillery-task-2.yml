@@ -1,0 +1,19 @@
+config:
+  target: 'https://gaillery.angeloyo.com'
+  phases:
+    - duration: 30
+      arrivalRate: 0
+      rampTo: 150
+      name: "Warm-up phase"
+    - duration: 60
+      arrivalRate: 150
+      name: "Steady state phase"
+    - duration: 30
+      arrivalRate: 150
+      rampTo: 0
+      name: "Ramp-down phase"
+  processor: "./script-task-2.js"
+
+scenarios:
+  - flow:
+    - function: "uploadRandomImages"
