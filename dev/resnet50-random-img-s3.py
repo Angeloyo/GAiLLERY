@@ -9,7 +9,7 @@ import sys
 from io import BytesIO
 import uuid
 
-def download_image(image_size=(224, 224)):
+def download_image(image_size=(1024, 1024)):
     """
     Downloads an image from Lorem Picsum.
 

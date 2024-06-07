@@ -8,6 +8,12 @@ const s3 = new AWS.S3();
 const bucketName = 'gaillery-img-bucket1';
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
 
+const overlay = document.getElementById('overlay');
+const statusText = document.getElementById('statusText');
+const gallery = document.getElementById('gallery');
+const micDiv = document.getElementById('mic-div');
+const deleteAllButton = document.getElementById('deleteAllBtn');
+
 document.getElementById('fileInput').addEventListener('change', function(event) {
     const files = event.target.files;
     if (files.length > 0) {
@@ -19,9 +25,18 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// document.getElementById('commands-btn').addEventListener('click', () => {
+//     const commandsModal = document.getElementById('commands-modal');
+//     if (commandsModal.classList.contains('hidden')) {
+//         commandsModal.classList.remove('hidden');
+//         commandsModal.classList.add('block');
+//     } else {
+//         commandsModal.classList.add('hidden');
+//         commandsModal.classList.remove('block');
+//     }
+// });
+
 async function uploadFiles(files) {
-    const overlay = document.getElementById('overlay');
-    const statusText = document.getElementById('statusText');
     overlay.classList.remove('hidden'); 
 
     for (let index = 0; index < files.length; index++) {
@@ -114,97 +129,85 @@ function fetchTags(key, callback) {
     });
 }
 
-function loadGallery(showLoader = true) {
+function loadGallery() {
 
-    const loadingSpinnerWrapper = document.getElementById('loadingSpinnerWrapper');
-    const deleteAllButton = document.getElementById('deleteAllBtn');
+    overlay.classList.remove('hidden');
+    micDiv.classList.add('hidden');
+    deleteAllButton.classList.add('hidden');
 
-    if (showLoader) {
-        loadingSpinnerWrapper.style.display = 'flex';
-    }
-    
-    deleteAllButton.style.display = 'none';
+    const params = { Bucket: bucketName };
 
-    const params = {
-        Bucket: bucketName,
-    };
-
-    s3.listObjectsV2(params, function(err, data) {
-        
-        if (showLoader) {
-            loadingSpinnerWrapper.style.display = 'none';
-        }
-
+    s3.listObjectsV2(params, async function(err, data) {
         if (err) {
             console.error('Error listing objects:', err);
             return;
         }
 
-        const gallery = document.getElementById('gallery');
         gallery.innerHTML = '';
+        gallery.classList.add('hidden');
 
-        if(data.Contents.length === 0) {
+        if (data.Contents.length === 0) {
             gallery.innerHTML = '<p class="text-center text-lg m-10 font-bold">No images found.</p>';
+            if (showLoader) {
+                overlay.classList.add('hidden');
+            }
             return;
         }
 
-        deleteAllButton.style.display = 'block';
-        
-        data.Contents.forEach(item => {
+        const promises = data.Contents.map(item => createImageContainerWithTags(item.Key));
 
-            const imageUrl = `https://${bucketName}.s3.${AWS.config.region}.amazonaws.com/${item.Key}`;
-        
+        await Promise.all(promises);
+
+        // sleep(2000);
+        overlay.classList.add('hidden');
+        gallery.classList.remove('hidden');
+        micDiv.classList.remove('hidden');
+        deleteAllButton.classList.remove('hidden');
+
+        initializeGallery();
+    });
+}
+
+async function createImageContainerWithTags(key) {
+    const imageUrl = `https://${bucketName}.s3.${AWS.config.region}.amazonaws.com/${key}`;
+
+    return new Promise((resolve, reject) => {
+        fetchTags(key, function(tags) {
             const container = document.createElement('div');
-            container.className = 'inline-block relative ';
-        
-            const a = document.createElement('a');
-            a.href = imageUrl;
+            container.className = 'inline-block relative';
 
             const img = document.createElement('img');
             img.src = imageUrl;
             img.className = 'block w-full h-auto';
-        
-            a.appendChild(img);
-            container.appendChild(a);
-        
+            container.appendChild(img);
+
             const deleteIcon = document.createElement('div');
             deleteIcon.className = 'hidden delete-icon absolute top-2 right-2 p-1 bg-red-400 hover:bg-red-500 text-white text-center rounded-full cursor-pointer flex items-center justify-center';
             deleteIcon.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3">
-                <path fill-rule="evenodd" d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5a.75.75 0 0 1 .786-.711Z" clip-rule="evenodd" />
-            </svg>`
-          ;
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-3">
+                    <path fill-rule="evenodd" d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5a.75.75 0 0 1 .786-.711Z" clip-rule="evenodd" />
+                </svg>`
+            ;
             deleteIcon.onclick = function() {
-                deleteImage(item.Key);
-            };        
+                deleteImage(key);
+            };
             container.appendChild(deleteIcon);
 
             const tagContainer = document.createElement('div');
             tagContainer.className = 'p-2 text-center absolute bottom-0 left-0 w-full text-white bg-black bg-opacity-50 hidden';
             container.appendChild(tagContainer);
 
-            fetchTags(item.Key, function(tags) {
-
-                if (tags && tags.Labels) {
-                
-                    var imgTag = '';
-                
-                    tags.Labels.forEach(label => {
-                
-                        const tag = document.createElement('div');
-
-                        tag.className = 'text-xs';
-                        tag.textContent = `${label.Description}: ${label.Probability}`;
-
-                        tagContainer.appendChild(tag);
-
-                        imgTag += `<p>${label.Description} (${label.Probability})</p>`;
-
-                        a.setAttribute('data-sub-html', imgTag);
-
-                    });
-                }
-            });
+            if (tags && tags.Labels) {
+                var imgTag = '';
+                tags.Labels.forEach(label => {
+                    const tag = document.createElement('div');
+                    tag.className = 'text-xs';
+                    tag.textContent = `${label.Description}: ${label.Probability}`;
+                    tagContainer.appendChild(tag);
+                    imgTag += `<p>${label.Description} (${label.Probability})</p>`;
+                    img.setAttribute('data-sub-html', imgTag);
+                });
+            }
 
             container.onmouseover = function() {
                 tagContainer.style.display = 'block';
@@ -214,30 +217,32 @@ function loadGallery(showLoader = true) {
                 tagContainer.style.display = 'none';
                 deleteIcon.style.display = 'none';
             };
-        
-            gallery.appendChild(container);
-        });
 
-        // Initialize the gallery after images are loaded
-        $("#gallery").justifiedGallery({
-            captions: false,
-            rowHeight: 180,
-            margins: 5
-        }).on("jg.complete", function() {
-            window.lightGallery(document.getElementById("gallery"), {
-                selector: 'a',
-                autoplayFirstVideo: false,
-                plugins: [],
-                galleryId: "nature",
-                licenseKey: '765AA57B-7AC54794-8B6C4E56-50182807',
-                speed: 500,
-                download: false,
-                mobileSettings: {
-                    controls: true,
-                    showCloseIcon: true,
-                    rotate: false
-                }
-            });
+            document.getElementById('gallery').appendChild(container);
+            resolve();
+        });
+    });
+}
+
+function initializeGallery() {
+    $("#gallery").justifiedGallery({
+        captions: false,
+        rowHeight: 180,
+        margins: 5
+    }).on("jg.complete", function() {
+        window.lightGallery(document.getElementById("gallery"), {
+            selector: 'img',
+            autoplayFirstVideo: false,
+            plugins: [],
+            galleryId: "nature",
+            licenseKey: '765AA57B-7AC54794-8B6C4E56-50182807',
+            speed: 500,
+            download: false,
+            mobileSettings: {
+                controls: true,
+                showCloseIcon: true,
+                rotate: false
+            }
         });
     });
 }
