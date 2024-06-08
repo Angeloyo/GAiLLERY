@@ -14,6 +14,8 @@ const gallery = document.getElementById('gallery');
 const micDiv = document.getElementById('mic-div');
 const deleteAllButton = document.getElementById('deleteAllBtn');
 
+let plugin = "";
+
 document.getElementById('fileInput').addEventListener('change', function(event) {
     const files = event.target.files;
     if (files.length > 0) {
@@ -292,7 +294,7 @@ function initializeGallery() {
         rowHeight: 180,
         margins: 5
     }).on("jg.complete", function() {
-        lightGallery(gallery, {
+        plugin = lightGallery(gallery, {
             selector: '.photo-item',
             licenseKey: '765AA57B-7AC54794-8B6C4E56-50182807',
             download: false,

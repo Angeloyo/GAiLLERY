@@ -11,19 +11,15 @@ const micButton = document.getElementById('mic-button');
 
 if (recognition) {
     recognition.lang = 'en-US';
-    recognition.continuous = false;
+    recognition.continuous = true;
     recognition.interimResults = false;
 
     micButton.addEventListener('click', () => {
-        if (recognition && recognition.abort) {
-            recognition.abort();
-        }
         if (micButton.classList.contains('bg-red-600')) {
             recognition.stop();
         } else {
             recognition.start();
         }
-        // loadGallery(false, 'seashore')
     });
 
     recognition.onstart = () => {
@@ -36,40 +32,36 @@ if (recognition) {
         micButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
     };
 
+    // recognition.onresult = (event) => {
+    //     var transcript = event.results[0][0].transcript.toLowerCase().trim();
+    //     console.log('Transcript:', transcript);
+    //     handleVoiceCommand(transcript);
+    // };
     recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.toLowerCase().trim();
-        // console.log('Transcript:', transcript);
+        let lastResultIndex = event.results.length - 1;
+        var transcript = event.results[lastResultIndex][0].transcript.toLowerCase().trim();
+        console.log('Transcript received:', transcript);
+    
         handleVoiceCommand(transcript);
     };
 }
 
 function handleVoiceCommand(command) {
-    console.log('Voice command:', command);
+    // console.log('Voice command:', command);
     if (command.startsWith("show me") && command.endsWith("photos")) {
         const tag = command.slice(8, -7).trim();
-        // console.log('Tag:', tag);
         loadGallery(false, tag);
-    } else if (command === "next image") {
-        goToNextImage();
-    } else if (command === "previous image") {
-        goToPreviousImage();
-    } else if (command === "close gallery") {
-        closeGallery();
+    } else if (command === "open gallery" || command === "open the gallery") {
+        plugin.openGallery();
+    }
+    else if (command === "next" || command === "forward" || command === "go forward" || command === "next photo" || command === "next image" || command === "next picture") {
+        plugin.goToNextSlide();
+    }
+    else if (command === "previous" || command === "back" || command === "go back" || command === "previous photo" || command === "previous image" || command === "previous picture") {
+        plugin.goToPrevSlide();
+    }
+    else if (command === "close gallery") {
+        plugin.closeGallery();
     }
 }
 
-function filterImagesByTag(tag) {
-    console.log('Filtrando imágenes por tag:', tag);
-}
-
-function goToNextImage() {
-    console.log('Yendo a la siguiente imagen');
-}
-
-function goToPreviousImage() {
-    console.log('Regresando a la imagen anterior');
-}
-
-function closeGallery() {
-    console.log('Cerrando galería');
-}
