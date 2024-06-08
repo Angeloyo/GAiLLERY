@@ -119,7 +119,7 @@ function fetchTags(key, callback) {
             'PhotoID': key
         }
     };
-
+    
     dynamoDB.get(params, function(err, data) {
         if (err) {
             console.error("Error fetching tags from DynamoDB:", err);
@@ -129,9 +129,13 @@ function fetchTags(key, callback) {
     });
 }
 
-function loadGallery() {
+function loadGallery(showloader = true, tagFilter = false) {
 
-    overlay.classList.remove('hidden');
+    if (showloader) {
+        overlay.classList.remove('hidden');
+        statusText.textContent = 'Loading images...';
+    }
+
     micDiv.classList.add('hidden');
     deleteAllButton.classList.add('hidden');
 
@@ -148,23 +152,77 @@ function loadGallery() {
 
         if (data.Contents.length === 0) {
             gallery.innerHTML = '<p class="text-center text-lg m-10 font-bold">No images found.</p>';
-            if (showLoader) {
+            if (showloader){
                 overlay.classList.add('hidden');
+                statusText.textContent = '';
             }
             return;
         }
 
-        const promises = data.Contents.map(item => createImageContainerWithTags(item.Key));
+        // const promises = data.Contents.map(item => createImageContainerWithTags(item.Key));
+        const promises = data.Contents.map(item => {
+            return tagFilter ? fetchAndFilterImage(item.Key, tagFilter) : createImageContainerWithTags(item.Key);
+        });
 
         await Promise.all(promises);
 
         // sleep(2000);
-        overlay.classList.add('hidden');
+        if (showloader){
+            overlay.classList.add('hidden');
+            statusText.textContent = '';
+        }
         gallery.classList.remove('hidden');
         micDiv.classList.remove('hidden');
         deleteAllButton.classList.remove('hidden');
 
         initializeGallery();
+
+    });
+    
+}
+
+function removeLgContainersExceptLatest() {
+    const elements = document.querySelectorAll("[id^='lg-container-']");
+    let maxIdNum = 0;
+    let maxIdElement = null;
+
+    // Identificar el elemento con el número de ID más alto
+    elements.forEach(element => {
+        const match = element.id.match(/^lg-container-(\d+)$/);
+        if (match) {
+            const idNum = parseInt(match[1], 10);
+            if (idNum > maxIdNum) {
+                maxIdNum = idNum;
+                maxIdElement = element;
+            }
+        }
+    });
+
+    // Si hay más de un elemento, eliminar todos excepto el de número más alto
+    if (elements.length > 1) {
+        elements.forEach(element => {
+            if (element !== maxIdElement) {
+                element.parentNode.removeChild(element);
+            }
+        });
+    }
+}
+
+function fetchAndFilterImage(key, tagFilter) {
+    return new Promise((resolve, reject) => {
+        fetchTags(key, function(tags) {
+            if (tags) {
+                const labels = tags.Labels || [];
+                const tagFound = labels.some(label => label.Description.toLowerCase() === tagFilter.toLowerCase());
+                if (tagFound) {
+                    createImageContainerWithTags(key).then(resolve).catch(reject);
+                } else {
+                    resolve();
+                }
+            } else {
+                resolve();
+            }
+        });
     });
 }
 
@@ -173,8 +231,10 @@ async function createImageContainerWithTags(key) {
 
     return new Promise((resolve, reject) => {
         fetchTags(key, function(tags) {
+
             const container = document.createElement('div');
-            container.className = 'inline-block relative';
+            container.setAttribute('data-src', imageUrl);
+            container.className = 'inline-block relative photo-item';
 
             const img = document.createElement('img');
             img.src = imageUrl;
@@ -188,7 +248,8 @@ async function createImageContainerWithTags(key) {
                     <path fill-rule="evenodd" d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5a.75.75 0 0 1 .786-.711Z" clip-rule="evenodd" />
                 </svg>`
             ;
-            deleteIcon.onclick = function() {
+            deleteIcon.onclick = function(event) {
+                event.stopPropagation(); 
                 deleteImage(key);
             };
             container.appendChild(deleteIcon);
@@ -205,7 +266,8 @@ async function createImageContainerWithTags(key) {
                     tag.textContent = `${label.Description}: ${label.Probability}`;
                     tagContainer.appendChild(tag);
                     imgTag += `<p>${label.Description} (${label.Probability})</p>`;
-                    img.setAttribute('data-sub-html', imgTag);
+                    // img.setAttribute('data-sub-html', imgTag);
+                    container.setAttribute('data-sub-html', imgTag);
                 });
             }
 
@@ -218,7 +280,7 @@ async function createImageContainerWithTags(key) {
                 deleteIcon.style.display = 'none';
             };
 
-            document.getElementById('gallery').appendChild(container);
+            gallery.appendChild(container);
             resolve();
         });
     });
@@ -230,21 +292,20 @@ function initializeGallery() {
         rowHeight: 180,
         margins: 5
     }).on("jg.complete", function() {
-        window.lightGallery(document.getElementById("gallery"), {
-            selector: 'img',
-            autoplayFirstVideo: false,
-            plugins: [],
-            galleryId: "nature",
+        lightGallery(gallery, {
+            selector: '.photo-item',
             licenseKey: '765AA57B-7AC54794-8B6C4E56-50182807',
-            speed: 500,
             download: false,
+            // subHtmlSelectorRelative: true,
             mobileSettings: {
                 controls: true,
                 showCloseIcon: true,
                 rotate: false
             }
         });
+        removeLgContainersExceptLatest();
     });
+
 }
 
 function deleteImage(key) {
@@ -260,7 +321,6 @@ function deleteImage(key) {
         } else {
             // console.log('Successfully deleted image from S3:', data);
             
-            // Parameters for deleting from DynamoDB
             const dynamoDBParams = {
                 TableName: 'PhotoTags', // Change this to your DynamoDB table name
                 Key: {
@@ -268,14 +328,13 @@ function deleteImage(key) {
                 }
             };
 
-            // Delete the corresponding tags from DynamoDB
             dynamoDB.delete(dynamoDBParams, function(err, data) {
                 if (err) {
                     console.error('Error deleting tags from DynamoDB:', err);
                 } else {
                     // console.log('Successfully deleted tags from DynamoDB:', data);
-                    // loadGallery(false);
-                    location.reload();
+                    loadGallery(false);
+                    // location.reload();
                 }
             });
 
@@ -320,7 +379,8 @@ async function uploadRandomImages(numImages = 5) {
     await sleep(2000);
     overlay.classList.add('hidden');
     statusText.textContent = '';
-    location.reload();
+    // location.reload();
+    loadGallery();
 }
 
 async function deleteAllImages() {

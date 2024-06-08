@@ -23,6 +23,7 @@ if (recognition) {
         } else {
             recognition.start();
         }
+        // loadGallery(false, 'seashore')
     });
 
     recognition.onstart = () => {
@@ -37,16 +38,17 @@ if (recognition) {
 
     recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript.toLowerCase().trim();
-        console.log('Transcript:', transcript);
+        // console.log('Transcript:', transcript);
         handleVoiceCommand(transcript);
     };
 }
 
 function handleVoiceCommand(command) {
     console.log('Voice command:', command);
-    if (command.includes("show me images of")) {
-        const searchTerm = command.replace("show me images of", "").trim();
-        filterImagesByTag(searchTerm);
+    if (command.startsWith("show me") && command.endsWith("photos")) {
+        const tag = command.slice(8, -7).trim();
+        // console.log('Tag:', tag);
+        loadGallery(false, tag);
     } else if (command === "next image") {
         goToNextImage();
     } else if (command === "previous image") {
