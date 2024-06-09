@@ -27,16 +27,16 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// document.getElementById('commands-btn').addEventListener('click', () => {
-//     const commandsModal = document.getElementById('commands-modal');
-//     if (commandsModal.classList.contains('hidden')) {
-//         commandsModal.classList.remove('hidden');
-//         commandsModal.classList.add('block');
-//     } else {
-//         commandsModal.classList.add('hidden');
-//         commandsModal.classList.remove('block');
-//     }
-// });
+document.getElementById('commands-btn').addEventListener('click', () => {
+    const commandsModal = document.getElementById('commands-modal');
+    if (commandsModal.classList.contains('hidden')) {
+        commandsModal.classList.remove('hidden');
+        commandsModal.classList.add('block');
+    } else {
+        commandsModal.classList.add('hidden');
+        commandsModal.classList.remove('block');
+    }
+});
 
 async function uploadFiles(files) {
     overlay.classList.remove('hidden'); 

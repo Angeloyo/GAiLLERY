@@ -84,8 +84,8 @@
         <div class="" id="gallery"></div>
         
         <div class="fixed bottom-4 right-4 flex flex-col items-center z-[1100]">
-            <div id="commands-modal"></div>
-            <!-- <div id="commands-modal" 
+
+            <div id="commands-modal" 
                 class="hidden text-sm m-2 bg-white p-3 shadow-lg rounded-lg text-gray-800">
                 <ul>
                     <li>Show me [tag] photos</li>
@@ -93,14 +93,19 @@
                     <li>Close gallery</li>
                     <li>Next photo</li>
                     <li>Previous photo</li>
-                    <li>First photo</li>
-                    <li>Last photo</li>
+                    <!-- <li>First photo</li> -->
+                    <!-- <li>Last photo</li> -->
+                    <!-- <li>Start slideshow</li>  -->
                     <li></li>
                 </ul>
-            </div> -->
+            </div>
 
             <div id="mic-div" class=" bg-blue-500 h-full rounded-full text-white flex 
             items-center justify-center shadow-lg mr-4 hidden">
+
+                <button id="commands-btn" class="py-2 px-4 text-sm underline font-normal">
+                    Show commands
+                </button>
 
                 <button id="mic-button" 
                     class=" bg-blue-600 hover:bg-blue-700 rounded-full py-2 px-4">
@@ -111,9 +116,7 @@
                 </button>
 
                 <button id="commands-btn"></button>
-                <!-- <button id="commands-btn" class="py-2 px-4 text-sm underline font-normal">
-                    Show commands
-                </button> -->
+                
             </div>
             
         </div>

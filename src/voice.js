@@ -47,9 +47,11 @@ if (recognition) {
 }
 
 function handleVoiceCommand(command) {
-    // console.log('Voice command:', command);
-    if (command.startsWith("show me") && command.endsWith("photos")) {
-        const tag = command.slice(8, -7).trim();
+    if (command.startsWith("show" || "show me" || "display" || "filter by") 
+            && command.endsWith("photos" || "images" || "pictures")) {
+        let tag = command.slice(8, -7).trim();
+        tag = tag.replace(/\s+/g, '_');
+        plugin.closeGallery();
         loadGallery(false, tag);
     } else if (command === "open gallery" || command === "open the gallery") {
         plugin.openGallery();
@@ -60,8 +62,11 @@ function handleVoiceCommand(command) {
     else if (command === "previous" || command === "back" || command === "go back" || command === "previous photo" || command === "previous image" || command === "previous picture") {
         plugin.goToPrevSlide();
     }
-    else if (command === "close gallery") {
+    else if (command === "close gallery" || command === "close the gallery" || command === "exit gallery" || command === "exit the gallery" || command === "close" || command === "exit") {
         plugin.closeGallery();
     }
 }
 
+//todo
+// command for slideshow
+// command 
