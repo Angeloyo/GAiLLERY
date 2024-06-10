@@ -13,7 +13,7 @@ import io
 import json
 import logging
 from PIL import Image
-from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input, decode_predictions
+from tensorflow.keras.applications.resnet50 import preprocess_input, decode_predictions
 from tensorflow.keras.models import load_model
 
 logger = logging.getLogger()
@@ -22,12 +22,6 @@ logger.setLevel(logging.INFO)
 s3_client = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
 model_path = '/var/task/resnet50_model.h5'
-
-try:
-    model = load_model(model_path)
-    logger.info("Model loaded successfully.")
-except Exception as e:
-    logger.error("Failed to load model", exc_info=True)
 
 def update_status(photo_id, status, table):
     """
@@ -100,6 +94,13 @@ def lambda_handler(event, context):
     Returns:
         dict: The response from the Lambda function.
     """
+
+    try:
+        model = load_model(model_path)
+        logger.info("Model loaded successfully.")
+    except Exception as e:
+        logger.error("Failed to load model", exc_info=True)
+        
     table = dynamodb.Table('PhotoTags')
     bucket_name = event['Records'][0]['s3']['bucket']['name']
     key = event['Records'][0]['s3']['object']['key']

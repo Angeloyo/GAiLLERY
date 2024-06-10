@@ -32,16 +32,10 @@ if (recognition) {
         micButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
     };
 
-    // recognition.onresult = (event) => {
-    //     var transcript = event.results[0][0].transcript.toLowerCase().trim();
-    //     console.log('Transcript:', transcript);
-    //     handleVoiceCommand(transcript);
-    // };
     recognition.onresult = (event) => {
         let lastResultIndex = event.results.length - 1;
         var transcript = event.results[lastResultIndex][0].transcript.toLowerCase().trim();
         console.log('Transcript received:', transcript);
-    
         handleVoiceCommand(transcript);
     };
 }
@@ -66,7 +60,3 @@ function handleVoiceCommand(command) {
         plugin.closeGallery();
     }
 }
-
-//todo
-// command for slideshow
-// command 
