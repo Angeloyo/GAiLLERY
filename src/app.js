@@ -156,6 +156,7 @@ function loadGallery(showloader = true, tagFilter = false) {
             gallery.innerHTML = '<p class="text-center text-lg m-10 font-bold">No images found.</p>';
             if (showloader){
                 overlay.classList.add('hidden');
+                gallery.classList.remove('hidden');
                 statusText.textContent = '';
             }
             return;
