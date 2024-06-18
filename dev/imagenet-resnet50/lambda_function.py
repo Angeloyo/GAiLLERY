@@ -66,7 +66,9 @@ def store_predictions(image_name, predictions, table):
     Returns:
         dict: The response from the put operation.
     """
-    labels = [{'Description': pred[1], 'Probability': f"{pred[2] * 100:.1f}%"} for pred in predictions]
+    labels = [{'Description': pred[1], 
+               'Probability': f"{pred[2] * 100:.1f}%"} 
+               for pred in predictions]
 
     logger.info(f"Storing predictions for {image_name} in DynamoDB...")
     try:
@@ -74,7 +76,6 @@ def store_predictions(image_name, predictions, table):
             Item={
                 'PhotoID': image_name,
                 'Labels': labels,
-                'Status': 'DONE'  
             }
         )
         logger.info("Data stored successfully.")
