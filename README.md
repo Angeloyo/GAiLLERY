@@ -8,3 +8,5 @@
 AWS-based photo gallery with image recognition tagging and voice control.
 
 Project for Computer Vision, Multimodal Interaction & Cloud Computing @ Sapienza Università di Roma
+
+![diagram](https://i.ibb.co/Hg4YbxW/diagram.png)
