@@ -5,8 +5,10 @@
 <br>
 <br>
 
-AWS-based photo gallery with image recognition tagging and voice control.
+AWS-based photo gallery with image recognition tagging (ResNet50 on AWS Lambda) and voice control (Web Speech API).
 
 Project for Computer Vision, Multimodal Interaction & Cloud Computing @ Sapienza Università di Roma
+
+[Watch a brief demo](https://www.youtube.com/watch?v=AKHgrrV8dgs)
 
 ![diagram](https://i.ibb.co/Hg4YbxW/diagram.png)
